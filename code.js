@@ -13,6 +13,17 @@ var Main_radar = {
 	y : Radar_main_lat_y
 }
 
+//объекты(точки) для отрисовки материков
+var StartPointContinent = {
+	x : 0,
+	y : 0
+}
+
+var FinishPointContinent = {
+	x : 0,
+	y : 0
+}
+
 //координаты лучей радара
 var Beams = [
 	[86.19, 4.46],
@@ -44,14 +55,8 @@ var lines = contours.split('\n');
 function New_continents(){ //отображение материков
 
 	let line_null = 0;  
-	let StartPointContinent = {
-		x : 0,
-		y : 0
-	}
-	let FinishPointContinent = {
-		x : 0,
-		y : 0
-	}
+
+	let check_line = 0;
 
 	for(var i = 0; i < lines.length; i++){
 		if (lines[i] != ""){
@@ -64,12 +69,17 @@ function New_continents(){ //отображение материков
 				if (line_null != -1){
 					FinishPointContinent.x = parseFloat(coords[0]);
 					FinishPointContinent.y = parseFloat(coords[1]);
-					New_Beams(StartPointContinent, FinishPointContinent);
 
-					StartPointContinent.x = parseFloat(coords[0]);
-					StartPointContinent.y = parseFloat(coords[1]);
+					if ( Math.abs(StartPointContinent.x - FinishPointContinent.x) <= 1 ){ //мы находим разность между x1 и x2 по модулю и если
+																						  //разность по долготе оказалась больше 1 градуса, то линия не отображается на карте
+						New_Beams(StartPointContinent, FinishPointContinent);
+
+						StartPointContinent.x = parseFloat(coords[0]);
+						StartPointContinent.y = parseFloat(coords[1]);
+					}
 				}
 				else{
+
 					StartPointContinent.x = parseFloat(coords[0]);
 					StartPointContinent.y = parseFloat(coords[1]);
 					line_null = 0;
@@ -164,7 +174,7 @@ function Main_logic(){ //главная функция - полная отрис
 
 	for (var i = 0; i < Beams.length; i++){
 		let point = {"x" : Beams[i][1], "y" : Beams[i][0]};
-		console.log(point);
+		//console.log(point);
 		New_Beams(Main_radar, point);
 	}
 
@@ -186,9 +196,4 @@ function Gnomonic_projection_radar(point){ // гномоническая про�
 	return {"x" : x/transform_to_radians, "y" : y/transform_to_radians};
 
 }
-
-
-
-
-
 
